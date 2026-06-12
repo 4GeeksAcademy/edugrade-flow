@@ -159,7 +159,7 @@ export default function DemoAdminPage() {
         <section className="rounded-lg border border-slate-200 bg-white p-4 shadow-sm shadow-slate-900/5">
           <h3 className="text-sm font-semibold text-slate-900">Acciones rápidas</h3>
           <div className="mt-3 flex flex-wrap gap-2">
-            <Button variant="secondary">Revisar pendientes</Button>
+            <Button href="/demo/admin/revision" variant="secondary">Revisar pendientes</Button>
             <Button variant="secondary">Validar capturas</Button>
             <Button variant="secondary">Generar acta</Button>
             <Button variant="secondary">Generar boleta</Button>
