@@ -1,153 +1,161 @@
 # EduGrade Flow
 
-Aplicación web para automatizar la captura, validación y generación de actas y boletas escolares en Excel.
+Aplicación web para capturar, validar y generar de forma simulada actas y boletas escolares a partir de calificaciones capturadas por maestros.
+
+EduGrade Flow es un proyecto de portafolio basado en un flujo escolar real, donde la captura de calificaciones, la revisión administrativa y la generación de reportes se realizan de forma manual o repetitiva.
+
+> Este repositorio usa únicamente datos ficticios o anonimizados. No contiene información real de alumnos, maestros, formularios, calificaciones ni archivos internos de ninguna institución.
+
+---
 
 ## Descripción
 
-EduGrade Flow es un proyecto de portafolio basado en un proceso real observado en una institución educativa privada.
+EduGrade Flow propone un sistema web con dos roles principales:
 
-El sistema busca reemplazar un flujo manual de captura y generación de reportes escolares por una aplicación web donde los maestros puedan capturar calificaciones en tabla, el sistema valide errores automáticamente y el personal administrativo pueda generar actas por materia y boletas individuales en Excel.
+* **Maestro:** captura calificaciones, pega datos desde Excel, revisa errores y envía la captura.
+* **Secretaría/Admin:** revisa capturas, filtra pendientes, solicita correcciones, valida información y genera documentos en demo.
 
-> Este repositorio usa únicamente datos ficticios o anonimizados. No contiene información real de alumnos, maestros, formularios, calificaciones ni archivos internos de la institución.
+El objetivo del proyecto es demostrar un flujo funcional de extremo a extremo:
+
+```text
+Maestro captura calificaciones
+↓
+Sistema valida datos y escalas
+↓
+Secretaría revisa capturas
+↓
+Secretaría valida o solicita corrección
+↓
+Sistema genera actas y boletas en demo
+```
 
 ---
 
 ## Problema
 
-Actualmente, la captura de calificaciones se realiza mediante formularios digitales separados por grupo.
+En el flujo manual, los maestros capturan calificaciones en formularios o archivos separados. Posteriormente, el área administrativa debe revisar respuestas, detectar errores, validar información y preparar actas o boletas en Excel.
 
-El maestro debe capturar información alumno por alumno, repitiendo datos como:
+Este proceso puede generar:
 
-* Maestro.
-* Materia.
-* Alumno.
-* Trimestre.
-* Criterios de evaluación.
-* Calificación final.
-
-Después, el personal administrativo revisa las respuestas, filtra información y genera documentos en Excel como:
-
-* Actas por materia.
-* Boletas individuales por alumno.
-
-Este flujo genera trabajo repetitivo, riesgo de duplicados, errores de captura y dificultad para validar si la información está completa.
+* Captura repetitiva.
+* Errores de escala o suma.
+* Duplicados.
+* Alumnos pendientes de calificación.
+* Revisión administrativa lenta.
+* Dificultad para saber qué capturas ya están listas.
+* Generación manual de documentos.
 
 ---
 
 ## Solución propuesta
 
-EduGrade Flow propone una aplicación web con dos áreas principales:
+EduGrade Flow centraliza el proceso en una aplicación web con captura en tabla, validaciones automáticas y revisión administrativa.
 
-### Panel de secretaria/admin
-
-Permite administrar:
-
-* Ciclo escolar.
-* Grupos oficiales.
-* Alumnos.
-* Maestros.
-* Materias.
-* Niveles de inglés.
-* Trimestre activo.
-* Revisión de capturas.
-* Validación de errores.
-* Generación de actas y boletas.
-
-### Panel de maestro
+### Panel del maestro
 
 Permite:
 
-* Ver materias, grupos o niveles asignados.
-* Capturar calificaciones en tabla.
-* Copiar y pegar datos desde Excel.
+* Ver el ciclo escolar y trimestre activo.
+* Identificar si la ventana de captura está activa o bloqueada por nivel educativo.
+* Capturar calificaciones por alumno.
+* Pegar datos desde Excel.
 * Calcular automáticamente la calificación final.
-* Validar errores antes de guardar.
+* Limpiar una fila o toda la tabla.
+* Detectar errores o posibles problemas de escala.
+* Confirmar calificaciones con escala sospechosa.
+* Guardar y enviar la captura en modo demo.
+
+### Panel de secretaría/admin
+
+Permite:
+
+* Ver resumen operativo de capturas.
+* Revisar capturas por grupo, materia y maestro.
+* Filtrar por estado, nivel, grupo, maestro o materia.
+* Buscar capturas rápidamente.
+* Validar capturas individualmente o en bloque.
+* Solicitar correcciones.
+* Ver detalle de alumnos incluidos en una captura.
+* Generar actas y boletas en modo demo.
+* Consultar vista previa de documentos simulados.
 
 ---
 
-## Funcionalidades principales
+## Funcionalidades implementadas en el MVP
 
+* Landing page del proyecto.
+* Selección de rol.
+* Panel de maestro.
+* Panel de secretaría/admin.
+* Control visual de ventana de captura por nivel educativo.
 * Captura de calificaciones en tabla.
-* Control de trimestre activo.
-* Bloqueo de trimestres cerrados o futuros.
+* Pegado de datos desde Excel.
 * Cálculo automático de calificación final.
-* Validación de sumas incorrectas.
-* Detección de duplicados.
-* Detección de alumnos sin calificación.
-* Reporte de maestros pendientes.
-* Reporte de alumnos con bajo promedio.
-* Manejo especial de inglés por niveles.
-* Generación de acta por materia en Excel.
-* Generación de boleta individual en Excel.
+* Limpieza por fila.
+* Limpieza de tabla completa.
+* Validación de pendientes.
+* Validación de errores.
+* Confirmación de escala por parte del maestro.
+* Guardado y envío simulado de captura.
+* Revisión administrativa masiva.
+* Filtros y búsqueda en capturas.
+* Selección múltiple de capturas.
+* Validación individual y masiva.
+* Solicitud de corrección individual y masiva.
+* Estado “Corrección solicitada”.
+* Detalle de captura seleccionada.
+* Lista de alumnos incluidos en la captura.
+* Validación de escala por nivel educativo:
+
+  * Secundaria: 1 a 10.
+  * Preparatoria: 0 a 100.
+* Pantalla de actas y boletas.
+* Vista previa simulada de documentos.
+* Generación demo de documentos.
 
 ---
 
-## Caso especial: inglés por niveles
+## Capturas del MVP
 
-La materia de inglés puede organizarse por niveles, no necesariamente por grupo oficial.
+Las capturas principales del flujo se encuentran en:
 
-Un nivel de inglés puede tener alumnos de distintos grupos oficiales. Sin embargo, para reportes finales:
+```text
+screenshots/demo/
+```
 
-* El acta se genera por grupo oficial.
-* La boleta individual muestra la materia como “Inglés”.
-* El nivel de inglés no cambia el grupo oficial del alumno.
-
----
-
-## Documentación
-
-La documentación del proyecto está dividida en archivos Markdown dentro de la carpeta `docs/`.
-
-| Documento                                         | Descripción                                                        |
-| ------------------------------------------------- | ------------------------------------------------------------------ |
-| [01. Problema](docs/01-problema.md)               | Contexto, problema principal e impacto                             |
-| [02. Flujo actual](docs/02-flujo-actual.md)       | Proceso actual de captura y generación de reportes                 |
-| [03. Requerimientos](docs/03-requerimientos.md)   | Requerimientos funcionales, no funcionales y reglas de negocio     |
-| [04. Flujo propuesto](docs/04-flujo-propuesto.md) | Nuevo flujo con la aplicación web                                  |
-| [05. Modelo de datos](docs/05-modelo-datos.md)    | Entidades, relaciones y reglas de datos                            |
-| [06. Pantallas](docs/06-pantallas.md)             | Pantallas principales del sistema                                  |
-| [07. Validaciones](docs/07-validaciones.md)       | Validaciones de captura, administración y generación de documentos |
-| [08. Roadmap](docs/08-roadmap.md)                 | Plan de desarrollo por fases                                       |
-| [09. Caso de estudio](docs/09-caso-estudio.md)    | Resumen del proyecto para portafolio                               |
+| Pantalla                | Archivo                                            |
+| ----------------------- | -------------------------------------------------- |
+| Landing page            | `screenshots/demo/01-landing.png`                  |
+| Selección de rol        | `screenshots/demo/02-seleccion-rol.png`            |
+| Panel del maestro       | `screenshots/demo/03-panel-maestro.png`            |
+| Captura del maestro     | `screenshots/demo/04-captura-maestro.png`          |
+| Panel administrativo    | `screenshots/demo/05-panel-admin.png`              |
+| Revisión administrativa | `screenshots/demo/06-revision-admin.png`           |
+| Actas y boletas         | `screenshots/demo/07-documentos-actas-boletas.png` |
 
 ---
 
-## MVP
+## Rutas principales
 
-La primera versión del proyecto se enfocará en:
-
-1. Landing page del proyecto.
-2. Login simulado por rol.
-3. Panel de secretaria/admin.
-4. Panel de maestro.
-5. Control de trimestre activo.
-6. Captura de calificaciones en tabla.
-7. Copiar y pegar desde Excel.
-8. Cálculo automático de calificación final.
-9. Validaciones principales.
-10. Revisión administrativa de capturas.
-11. Generación de acta en Excel.
-12. Generación de boleta individual en Excel.
+```text
+/                         Landing page
+/demo                     Selección de rol
+/demo/maestro             Panel del maestro
+/demo/maestro/captura     Captura de calificaciones
+/demo/admin               Panel administrativo
+/demo/admin/revision      Revisión administrativa
+/demo/admin/documentos    Actas y boletas en demo
+```
 
 ---
 
-## Tecnologías
-
-Tecnologías iniciales:
+## Tecnologías utilizadas
 
 * Next.js
 * React
 * TypeScript
 * Tailwind CSS
-
-Tecnologías previstas para fases posteriores:
-
-* Base de datos
-* Autenticación
-* API propia
-* Generación de archivos Excel
-* Dashboard administrativo
-* Despliegue web
+* Datos ficticios en archivos locales
 
 ---
 
@@ -165,40 +173,26 @@ edugrade-flow/
 │   ├── 06-pantallas.md
 │   ├── 07-validaciones.md
 │   ├── 08-roadmap.md
-│   └── 09-caso-estudio.md
+│   ├── 09-caso-estudio.md
+│   ├── 10-diseno-ui.md
+│   ├── 11-design-system.md
+│   └── 12-ai-ui-rules.md
 │
 ├── screenshots/
+│   ├── demo/
 │   ├── flujo-actual/
-│   ├── prototipo/
-│   └── demo/
+│   └── prototipo/
 │
-├── data/
-│   └── sample/
+├── src/
+│   ├── app/
+│   ├── components/
+│   ├── data/
+│   └── types/
 │
 ├── public/
-├── src/
 ├── package.json
 └── README.md
 ```
-
----
-
-## Protección de datos
-
-Este proyecto no debe incluir información real o sensible.
-
-No se debe subir al repositorio:
-
-* Archivos Excel reales.
-* Formularios reales.
-* Links reales de captura.
-* Nombres reales de alumnos.
-* CURP reales.
-* Calificaciones reales.
-* Capturas con datos personales.
-* Formatos internos sin anonimizar.
-
-Los datos usados en la demo serán ficticios.
 
 ---
 
@@ -224,23 +218,68 @@ http://localhost:3000
 
 ---
 
-## Estado del proyecto
+## Estado actual del proyecto
 
 ```text
-Fase actual: documentación y planeación del MVP.
+MVP visual funcional completado.
 ```
 
-Ya se cuenta con:
+El proyecto ya cuenta con un flujo demo completo:
 
-* Análisis del problema.
-* Flujo actual.
-* Requerimientos iniciales.
-* Flujo propuesto.
-* Modelo de datos.
-* Pantallas principales.
-* Validaciones.
-* Roadmap.
-* Caso de estudio.
+```text
+Landing
+→ Selección de rol
+→ Captura del maestro
+→ Revisión administrativa
+→ Generación simulada de actas y boletas
+```
+
+La aplicación todavía no implementa backend, autenticación real, base de datos ni generación real de archivos Excel. Es una demo funcional de interfaz y flujo de negocio.
+
+---
+
+## Limitaciones actuales
+
+* No hay autenticación real.
+* No hay backend.
+* No hay base de datos.
+* No se guardan datos de forma persistente.
+* La generación de actas y boletas es simulada.
+* No se descargan archivos Excel reales.
+* Los datos usados son ficticios.
+
+---
+
+## Próximas mejoras
+
+* Implementar autenticación por rol.
+* Conectar una base de datos.
+* Guardar capturas reales.
+* Implementar generación real de archivos Excel.
+* Agregar historial de correcciones.
+* Agregar permisos por usuario.
+* Agregar exportación de actas por materia.
+* Agregar exportación de boletas por alumno.
+* Mejorar trazabilidad administrativa.
+
+---
+
+## Protección de datos
+
+Este proyecto no debe incluir información real o sensible.
+
+No se debe subir al repositorio:
+
+* Archivos Excel reales.
+* Formularios reales.
+* Links reales de captura.
+* Nombres reales de alumnos.
+* CURP reales.
+* Calificaciones reales.
+* Capturas con datos personales.
+* Formatos internos sin anonimizar.
+
+Los datos usados en la demo son ficticios.
 
 ---
 
@@ -255,18 +294,7 @@ Este proyecto busca demostrar habilidades de:
 * Diseño de interfaces.
 * Desarrollo web con React y Next.js.
 * Validación de reglas de negocio.
-* Automatización de documentos.
+* Manejo de estados de captura.
+* Simulación de procesos administrativos.
 * Protección de datos sensibles.
 
----
-
-## Próximos pasos
-
-* Crear datos ficticios.
-* Diseñar landing page.
-* Crear login simulado.
-* Construir panel de maestro.
-* Construir panel de secretaria/admin.
-* Implementar captura en tabla.
-* Implementar validaciones.
-* Preparar generación de documentos Excel.
