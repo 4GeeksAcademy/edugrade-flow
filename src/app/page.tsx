@@ -1,65 +1,91 @@
-import Image from "next/image";
+import { AppShell } from "@/components/layout/AppShell";
+import { Card } from "@/components/ui/Card";
+import { MetricCard } from "@/components/ui/MetricCard";
+import { StatusBadge } from "@/components/ui/StatusBadge";
+import {
+  gradeEntries,
+  officialGroups,
+  students,
+  teachers,
+  terms,
+} from "@/data";
 
 export default function Home() {
+  const activeTerm = terms.find((term) => term.status === "active");
+  const pendingGrades = gradeEntries.filter((entry) => entry.status === "pendiente").length;
+  const errorGrades = gradeEntries.filter((entry) => entry.status === "con error").length;
+  const duplicatedGrades = gradeEntries.filter(
+    (entry) => entry.status === "duplicado",
+  ).length;
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
-    </div>
+    <AppShell
+      topbarTitle="Panel administrativo"
+      topbarSubtitle={`Ciclo escolar 2025-2026 • Trimestre activo: ${activeTerm?.name ?? "Sin trimestre activo"}`}
+    >
+      <div className="space-y-6">
+        <section className="grid grid-cols-4 gap-4">
+          <MetricCard
+            title="Grupos activos"
+            value={officialGroups.filter((group) => group.isActive).length}
+            helperText="Grupos oficiales del ciclo"
+            status="completo"
+          />
+          <MetricCard
+            title="Alumnos activos"
+            value={students.filter((student) => student.isActive).length}
+            helperText="Alumnos con registro activo"
+            status="completo"
+          />
+          <MetricCard
+            title="Maestros activos"
+            value={teachers.filter((teacher) => teacher.isActive).length}
+            helperText="Usuarios de captura"
+            status="validado"
+          />
+          <MetricCard
+            title="Capturas pendientes"
+            value={pendingGrades}
+            helperText="Registros incompletos"
+            status={pendingGrades > 0 ? "pendiente" : "completo"}
+          />
+        </section>
+
+        <section className="grid grid-cols-3 gap-4">
+          <Card title="Estado del proyecto" description="Fase 2: layout base y componentes reutilizables.">
+            <div className="space-y-2 text-sm text-slate-700">
+              <p>La interfaz actual es una vista de prueba para validar estilo institucional.</p>
+              <p>No representa el dashboard final ni la pantalla completa de captura.</p>
+            </div>
+          </Card>
+
+          <Card title="Estados de ejemplo" description="Vista rapida de badges para validaciones.">
+            <div className="flex flex-wrap gap-2">
+              <StatusBadge status="completo" />
+              <StatusBadge status="pendiente" />
+              <StatusBadge status="con error" />
+              <StatusBadge status="duplicado" />
+            </div>
+          </Card>
+
+          <Card title="Control de calidad" description="Resumen breve de registros con incidencias.">
+            <dl className="space-y-2 text-sm text-slate-700">
+              <div className="flex items-center justify-between">
+                <dt>Con error</dt>
+                <dd className="font-semibold text-red-700">{errorGrades}</dd>
+              </div>
+              <div className="flex items-center justify-between">
+                <dt>Duplicados</dt>
+                <dd className="font-semibold text-orange-700">{duplicatedGrades}</dd>
+              </div>
+              <div className="flex items-center justify-between">
+                <dt>Pendientes</dt>
+                <dd className="font-semibold text-amber-700">{pendingGrades}</dd>
+              </div>
+            </dl>
+          </Card>
+        </section>
+      </div>
+    </AppShell>
   );
 }
