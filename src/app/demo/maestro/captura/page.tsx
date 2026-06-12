@@ -21,7 +21,7 @@ type CaptureInputs = {
   examen: string;
 };
 
-type RowStatus = "Pendiente" | "Completo" | "Con error";
+type RowStatus = "Pendiente" | "Completo" | "Con error" | "Revisar escala";
 type SaveFeedbackTone = "success" | "warning" | "error";
 
 const emptyCaptureRow: CaptureInputs = {
@@ -82,7 +82,13 @@ function resolveRowResult(row: CaptureInputs) {
 
   let status: RowStatus = "Pendiente";
   if (!hasMissing) {
-    status = finalScore > 100 ? "Con error" : "Completo";
+    if (finalScore > 100) {
+      status = "Con error";
+    } else if (finalScore < 60) {
+      status = "Revisar escala";
+    } else {
+      status = "Completo";
+    }
   }
 
   return {
@@ -104,6 +110,9 @@ export default function DemoMaestroCapturaPage() {
   const [pasteValue, setPasteValue] = useState("");
   const [pasteFeedback, setPasteFeedback] = useState<{ tone: "success" | "error"; message: string } | null>(null);
   const [saveFeedback, setSaveFeedback] = useState<{ tone: SaveFeedbackTone; message: string } | null>(null);
+  const [isCaptureLocked, setIsCaptureLocked] = useState(false);
+  const [requiresSaveConfirmation, setRequiresSaveConfirmation] = useState(false);
+  const [scaleConfirmedByStudent, setScaleConfirmedByStudent] = useState<Record<string, boolean>>({});
 
   const [captureByStudent, setCaptureByStudent] = useState<Record<string, CaptureInputs>>(() => (
     groupStudents.reduce<Record<string, CaptureInputs>>((acc, student, index) => {
@@ -125,10 +134,15 @@ export default function DemoMaestroCapturaPage() {
         }
 
         const result = resolveRowResult(row);
-        if (result.status === "Completo") {
+        const isScaleConfirmed = scaleConfirmedByStudent[student.id] === true;
+        const effectiveStatus = result.status === "Revisar escala" && isScaleConfirmed ? "Completo" : result.status;
+
+        if (effectiveStatus === "Completo") {
           acc.completos += 1;
-        } else if (result.status === "Con error") {
+        } else if (effectiveStatus === "Con error") {
           acc.conError += 1;
+        } else if (effectiveStatus === "Revisar escala") {
+          acc.revisarEscala += 1;
         } else {
           acc.pendientes += 1;
         }
@@ -140,12 +154,17 @@ export default function DemoMaestroCapturaPage() {
         completos: 0,
         pendientes: 0,
         conError: 0,
+        revisarEscala: 0,
       },
     );
-  }, [captureByStudent, groupStudents]);
+  }, [captureByStudent, groupStudents, scaleConfirmedByStudent]);
 
   const handleInasistenciasChange = (studentId: string, value: string) => {
+    if (isCaptureLocked) {
+      return;
+    }
     setSaveFeedback(null);
+    setRequiresSaveConfirmation(false);
     const normalized = normalizeNumberInput(value);
     setCaptureByStudent((prev) => ({
       ...prev,
@@ -157,8 +176,21 @@ export default function DemoMaestroCapturaPage() {
   };
 
   const handleGradeChange = (studentId: string, field: "participacion" | "proyecto" | "trabajos" | "examen", value: string) => {
+    if (isCaptureLocked) {
+      return;
+    }
     setSaveFeedback(null);
+    setRequiresSaveConfirmation(false);
     const normalized = normalizeGradeInput(value);
+    setScaleConfirmedByStudent((prev) => {
+      if (!prev[studentId]) {
+        return prev;
+      }
+
+      const next = { ...prev };
+      delete next[studentId];
+      return next;
+    });
     setCaptureByStudent((prev) => ({
       ...prev,
       [studentId]: {
@@ -169,7 +201,11 @@ export default function DemoMaestroCapturaPage() {
   };
 
   const handleApplyPaste = () => {
+    if (isCaptureLocked) {
+      return;
+    }
     setSaveFeedback(null);
+    setRequiresSaveConfirmation(false);
     const lines = pasteValue
       .split(/\r?\n/)
       .map((line) => line.trim())
@@ -182,6 +218,7 @@ export default function DemoMaestroCapturaPage() {
 
     let appliedFields = 0;
     const next = { ...captureByStudent };
+    const nextScaleConfirmed = { ...scaleConfirmedByStudent };
     const fieldOrder: Array<keyof CaptureInputs> = ["inasistencias", "participacion", "proyecto", "trabajos", "examen"];
 
     lines.slice(0, groupStudents.length).forEach((line, rowIndex) => {
@@ -212,6 +249,9 @@ export default function DemoMaestroCapturaPage() {
           updatedRow[field] = normalizeNumberInput(columnValue);
         } else {
           updatedRow[field] = normalizeGradeInput(columnValue);
+          if (nextScaleConfirmed[studentId]) {
+            delete nextScaleConfirmed[studentId];
+          }
         }
 
         appliedFields += 1;
@@ -222,6 +262,7 @@ export default function DemoMaestroCapturaPage() {
 
     if (appliedFields > 0) {
       setCaptureByStudent(next);
+      setScaleConfirmedByStudent(nextScaleConfirmed);
     }
 
     if (appliedFields > 0) {
@@ -234,17 +275,34 @@ export default function DemoMaestroCapturaPage() {
   };
 
   const handleClearRow = (studentId: string) => {
+    if (isCaptureLocked) {
+      return;
+    }
     setSaveFeedback(null);
     setPasteFeedback(null);
+    setRequiresSaveConfirmation(false);
     setCaptureByStudent((prev) => ({
       ...prev,
       [studentId]: { ...emptyCaptureRow },
     }));
+    setScaleConfirmedByStudent((prev) => {
+      if (!prev[studentId]) {
+        return prev;
+      }
+
+      const next = { ...prev };
+      delete next[studentId];
+      return next;
+    });
   };
 
   const handleClearTable = () => {
+    if (isCaptureLocked) {
+      return;
+    }
     setSaveFeedback(null);
     setPasteFeedback(null);
+    setRequiresSaveConfirmation(false);
     setCaptureByStudent((prev) => {
       const next = { ...prev };
       groupStudents.forEach((student) => {
@@ -254,20 +312,55 @@ export default function DemoMaestroCapturaPage() {
       });
       return next;
     });
+    setScaleConfirmedByStudent({});
+  };
+
+  const handleConfirmScale = (studentId: string) => {
+    if (isCaptureLocked) {
+      return;
+    }
+
+    setSaveFeedback(null);
+    setRequiresSaveConfirmation(false);
+    setScaleConfirmedByStudent((prev) => ({
+      ...prev,
+      [studentId]: true,
+    }));
   };
 
   const handleSimulatedSave = () => {
     if (summary.pendientes > 0) {
+      setRequiresSaveConfirmation(false);
       setSaveFeedback({ tone: "warning", message: "No puedes guardar: hay alumnos pendientes." });
       return;
     }
 
     if (summary.conError > 0) {
+      setRequiresSaveConfirmation(false);
       setSaveFeedback({ tone: "error", message: "No puedes guardar: hay errores en la captura." });
       return;
     }
 
-    setSaveFeedback({ tone: "success", message: "Captura lista para guardar. Simulación completada correctamente." });
+    if (summary.revisarEscala > 0) {
+      setRequiresSaveConfirmation(false);
+      setSaveFeedback({ tone: "warning", message: "Hay calificaciones que requieren confirmación de escala antes de guardar." });
+      return;
+    }
+
+    setRequiresSaveConfirmation(true);
+    setSaveFeedback({ tone: "success", message: "Validaciones completas. Confirma para finalizar el guardado." });
+  };
+
+  const handleConfirmSave = () => {
+    setIsCaptureLocked(true);
+    setRequiresSaveConfirmation(false);
+    setSaveFeedback({ tone: "success", message: "Captura enviada correctamente en demo." });
+  };
+
+  const handleEnableEditing = () => {
+    setIsCaptureLocked(false);
+    setRequiresSaveConfirmation(false);
+    setSaveFeedback(null);
   };
 
   return (
@@ -309,6 +402,7 @@ export default function DemoMaestroCapturaPage() {
                 onChange={(event) => setPasteValue(event.target.value)}
                 rows={4}
                 placeholder={"0\t10\t30\t30\t20\n1\t15\t25\t25\t30"}
+                disabled={isCaptureLocked}
                 className="w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-xs text-slate-700 focus:border-slate-400 focus:outline-none"
               />
               <p className="text-xs text-slate-600">
@@ -323,6 +417,7 @@ export default function DemoMaestroCapturaPage() {
                 <button
                   type="button"
                   onClick={handleApplyPaste}
+                  disabled={isCaptureLocked}
                   className="inline-flex items-center rounded-md border border-slate-300 bg-white px-3 py-1.5 text-xs font-medium text-slate-700 transition hover:bg-slate-100"
                 >
                   Aplicar pegado
@@ -343,6 +438,9 @@ export default function DemoMaestroCapturaPage() {
             </p>
             <p>
               Con error: <span className="font-semibold text-red-700">{summary.conError}</span>
+            </p>
+            <p>
+              Revisar escala: <span className="font-semibold text-orange-700">{summary.revisarEscala}</span>
             </p>
           </div>
 
@@ -367,10 +465,14 @@ export default function DemoMaestroCapturaPage() {
                 {groupStudents.map((student) => {
                   const row = captureByStudent[student.id];
                   const rowResult = resolveRowResult(row);
-                  const statusTone = rowResult.status === "Completo"
+                  const isScaleConfirmed = scaleConfirmedByStudent[student.id] === true;
+                  const displayStatus = rowResult.status === "Revisar escala" && isScaleConfirmed ? "Completo" : rowResult.status;
+                  const statusTone = displayStatus === "Completo"
                     ? "green"
-                    : rowResult.status === "Con error"
+                    : displayStatus === "Con error"
                       ? "red"
+                      : displayStatus === "Revisar escala"
+                        ? "orange"
                       : "amber";
 
                   return (
@@ -388,6 +490,7 @@ export default function DemoMaestroCapturaPage() {
                           type="number"
                           inputMode="numeric"
                           min={0}
+                          disabled={isCaptureLocked}
                           className="w-16 rounded-md border border-slate-300 bg-white px-2 py-1 text-xs text-slate-700"
                         />
                       </td>
@@ -399,6 +502,7 @@ export default function DemoMaestroCapturaPage() {
                           inputMode="decimal"
                           min={0}
                           max={100}
+                          disabled={isCaptureLocked}
                           className="w-20 rounded-md border border-slate-300 bg-white px-2 py-1 text-xs text-slate-700"
                         />
                       </td>
@@ -410,6 +514,7 @@ export default function DemoMaestroCapturaPage() {
                           inputMode="decimal"
                           min={0}
                           max={100}
+                          disabled={isCaptureLocked}
                           className="w-20 rounded-md border border-slate-300 bg-white px-2 py-1 text-xs text-slate-700"
                         />
                       </td>
@@ -421,6 +526,7 @@ export default function DemoMaestroCapturaPage() {
                           inputMode="decimal"
                           min={0}
                           max={100}
+                          disabled={isCaptureLocked}
                           className="w-20 rounded-md border border-slate-300 bg-white px-2 py-1 text-xs text-slate-700"
                         />
                       </td>
@@ -432,6 +538,7 @@ export default function DemoMaestroCapturaPage() {
                           inputMode="decimal"
                           min={0}
                           max={100}
+                          disabled={isCaptureLocked}
                           className="w-20 rounded-md border border-slate-300 bg-white px-2 py-1 text-xs text-slate-700"
                         />
                       </td>
@@ -441,16 +548,29 @@ export default function DemoMaestroCapturaPage() {
                         </span>
                       </td>
                       <td className="px-3 py-2.5 whitespace-nowrap">
-                        <Badge tone={statusTone}>{rowResult.status}</Badge>
+                        <Badge tone={statusTone}>{displayStatus}</Badge>
                       </td>
                       <td className="px-3 py-2.5 whitespace-nowrap">
-                        <button
-                          type="button"
-                          onClick={() => handleClearRow(student.id)}
-                          className="inline-flex items-center rounded-md border border-slate-300 bg-white px-2.5 py-1 text-xs font-medium text-slate-700 transition hover:bg-slate-100"
-                        >
-                          Limpiar fila
-                        </button>
+                        <div className="flex items-center gap-2">
+                          {rowResult.status === "Revisar escala" && !isScaleConfirmed && (
+                            <button
+                              type="button"
+                              onClick={() => handleConfirmScale(student.id)}
+                              disabled={isCaptureLocked}
+                              className="inline-flex items-center rounded-md border border-orange-300 bg-orange-50 px-2.5 py-1 text-xs font-medium text-orange-700 transition hover:bg-orange-100"
+                            >
+                              Confirmar escala
+                            </button>
+                          )}
+                          <button
+                            type="button"
+                            onClick={() => handleClearRow(student.id)}
+                            disabled={isCaptureLocked}
+                            className="inline-flex items-center rounded-md border border-slate-300 bg-white px-2.5 py-1 text-xs font-medium text-slate-700 transition hover:bg-slate-100"
+                          >
+                            Limpiar fila
+                          </button>
+                        </div>
                       </td>
                     </tr>
                   );
@@ -464,6 +584,7 @@ export default function DemoMaestroCapturaPage() {
               <button
                 type="button"
                 onClick={handleClearTable}
+                disabled={isCaptureLocked}
                 className="inline-flex items-center rounded-md border border-slate-300 bg-white px-3 py-1.5 text-xs font-medium text-slate-700 transition hover:bg-slate-100"
               >
                 Limpiar tabla
@@ -471,10 +592,29 @@ export default function DemoMaestroCapturaPage() {
               <button
                 type="button"
                 onClick={handleSimulatedSave}
+                disabled={isCaptureLocked}
                 className="inline-flex items-center rounded-md border border-emerald-300 bg-emerald-50 px-3 py-1.5 text-xs font-medium text-emerald-700 transition hover:bg-emerald-100"
               >
                 Guardar captura
               </button>
+              {requiresSaveConfirmation && !isCaptureLocked && (
+                <button
+                  type="button"
+                  onClick={handleConfirmSave}
+                  className="inline-flex items-center rounded-md border border-emerald-500 bg-emerald-600 px-3 py-1.5 text-xs font-medium text-white transition hover:bg-emerald-700"
+                >
+                  Confirmar guardado
+                </button>
+              )}
+              {isCaptureLocked && (
+                <button
+                  type="button"
+                  onClick={handleEnableEditing}
+                  className="inline-flex items-center rounded-md border border-slate-300 bg-white px-3 py-1.5 text-xs font-medium text-slate-700 transition hover:bg-slate-100"
+                >
+                  Editar captura
+                </button>
+              )}
             </div>
 
             {saveFeedback && (
