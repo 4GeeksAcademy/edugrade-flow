@@ -101,7 +101,7 @@ export default function DemoMaestroPage() {
               se encuentra activa en este periodo.
             </p>
             <div className="mt-4">
-              <Button>Iniciar captura</Button>
+              <Button href="/demo/maestro/captura">Iniciar captura</Button>
             </div>
           </Card>
 
