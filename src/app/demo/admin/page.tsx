@@ -161,8 +161,8 @@ export default function DemoAdminPage() {
           <div className="mt-3 flex flex-wrap gap-2">
             <Button href="/demo/admin/revision" variant="secondary">Revisar pendientes</Button>
             <Button variant="secondary">Validar capturas</Button>
-            <Button variant="secondary">Generar acta</Button>
-            <Button variant="secondary">Generar boleta</Button>
+            <Button href="/demo/admin/documentos" variant="secondary">Generar acta</Button>
+            <Button href="/demo/admin/documentos" variant="secondary">Generar boleta</Button>
           </div>
         </section>
 
