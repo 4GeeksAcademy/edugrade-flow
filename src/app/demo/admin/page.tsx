@@ -57,9 +57,23 @@ export default function DemoAdminPage() {
 
   const activeTermEntries = gradeEntries.filter((entry) => entry.termId === activeTerm?.id);
 
-  const pendingCount = activeTermEntries.filter((entry) => entry.status === "pendiente").length;
-  const errorCount = activeTermEntries.filter((entry) => entry.status === "con error").length;
-  const duplicatedCount = activeTermEntries.filter((entry) => entry.status === "duplicado").length;
+  const groupLevelMap = new Map(officialGroups.map((group) => [group.id, group.level]));
+  const activeCaptureLevels = new Set(
+    captureWindows
+      .filter((window) => window.status === "Activo" && window.termId === activeTerm?.id)
+      .map((window) => window.level),
+  );
+  const hasActiveCaptureWindow = activeCaptureLevels.size > 0;
+  const visibleTermEntries = hasActiveCaptureWindow
+    ? activeTermEntries.filter((entry) => {
+        const groupLevel = groupLevelMap.get(entry.officialGroupId);
+        return groupLevel ? activeCaptureLevels.has(groupLevel) : false;
+      })
+    : [];
+
+  const pendingCount = visibleTermEntries.filter((entry) => entry.status === "pendiente").length;
+  const errorCount = visibleTermEntries.filter((entry) => entry.status === "con error").length;
+  const duplicatedCount = visibleTermEntries.filter((entry) => entry.status === "duplicado").length;
 
   const groupMap = new Map(officialGroups.map((group) => [group.id, group.name]));
   const subjectMap = new Map(subjects.map((subject) => [subject.id, subject.name]));
@@ -68,7 +82,7 @@ export default function DemoAdminPage() {
 
   const groupedEntries = new Map<string, (typeof gradeEntries)>();
 
-  for (const entry of activeTermEntries) {
+  for (const entry of visibleTermEntries) {
     const key = `${entry.officialGroupId}__${entry.subjectId}__${entry.teacherId}`;
     const existing = groupedEntries.get(key);
 
@@ -227,9 +241,13 @@ export default function DemoAdminPage() {
         <section>
           <Card
             title="Estado de captura"
-            description="Seguimiento por grupo, materia y maestro en el trimestre activo."
+            description="Seguimiento de capturas con ventana activa."
           >
-            <CaptureStatusTable rows={captureRows} />
+            {hasActiveCaptureWindow ? (
+              <CaptureStatusTable rows={captureRows} />
+            ) : (
+              <p className="text-sm text-slate-600">No hay ventanas de captura activas</p>
+            )}
           </Card>
         </section>
 
