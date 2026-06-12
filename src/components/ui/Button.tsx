@@ -1,10 +1,25 @@
-import type { ButtonHTMLAttributes } from "react";
+import Link from "next/link";
+import type { AnchorHTMLAttributes, ButtonHTMLAttributes, ReactNode } from "react";
 
 type ButtonVariant = "primary" | "secondary" | "ghost";
 
-type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
+type ButtonBaseProps = {
   variant?: ButtonVariant;
+  className?: string;
+  children: ReactNode;
 };
+
+type ButtonAsButtonProps = ButtonBaseProps &
+  ButtonHTMLAttributes<HTMLButtonElement> & {
+    href?: undefined;
+  };
+
+type ButtonAsLinkProps = ButtonBaseProps &
+  Omit<AnchorHTMLAttributes<HTMLAnchorElement>, "href"> & {
+    href: string;
+  };
+
+type ButtonProps = ButtonAsButtonProps | ButtonAsLinkProps;
 
 const variantStyles: Record<ButtonVariant, string> = {
   primary:
@@ -18,14 +33,29 @@ const variantStyles: Record<ButtonVariant, string> = {
 export function Button({
   variant = "primary",
   className = "",
-  type = "button",
   ...props
 }: ButtonProps) {
+  const buttonClassName = `inline-flex h-9 items-center justify-center rounded-md px-3 text-sm font-medium transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 disabled:cursor-not-allowed disabled:opacity-60 ${variantStyles[variant]} ${className}`;
+
+  if ("href" in props && props.href) {
+    const { href, children, ...rest } = props;
+
+    return (
+      <Link href={href} className={buttonClassName} {...rest}>
+        {children}
+      </Link>
+    );
+  }
+
+  const { type = "button", children, ...rest } = props;
+
   return (
     <button
       type={type}
-      className={`inline-flex h-9 items-center justify-center rounded-md px-3 text-sm font-medium transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 disabled:cursor-not-allowed disabled:opacity-60 ${variantStyles[variant]} ${className}`}
-      {...props}
-    />
+      className={buttonClassName}
+      {...rest}
+    >
+      {children}
+    </button>
   );
 }

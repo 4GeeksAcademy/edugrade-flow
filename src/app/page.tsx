@@ -1,91 +1,103 @@
-import { AppShell } from "@/components/layout/AppShell";
+import { Badge } from "@/components/ui/Badge";
+import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
-import { MetricCard } from "@/components/ui/MetricCard";
-import { StatusBadge } from "@/components/ui/StatusBadge";
-import {
-  gradeEntries,
-  officialGroups,
-  students,
-  teachers,
-  terms,
-} from "@/data";
 
 export default function Home() {
-  const activeTerm = terms.find((term) => term.status === "active");
-  const pendingGrades = gradeEntries.filter((entry) => entry.status === "pendiente").length;
-  const errorGrades = gradeEntries.filter((entry) => entry.status === "con error").length;
-  const duplicatedGrades = gradeEntries.filter(
-    (entry) => entry.status === "duplicado",
-  ).length;
-
   return (
-    <AppShell
-      topbarTitle="Panel administrativo"
-      topbarSubtitle={`Ciclo escolar 2025-2026 • Trimestre activo: ${activeTerm?.name ?? "Sin trimestre activo"}`}
-    >
-      <div className="space-y-6">
-        <section className="grid grid-cols-4 gap-4">
-          <MetricCard
-            title="Grupos activos"
-            value={officialGroups.filter((group) => group.isActive).length}
-            helperText="Grupos oficiales del ciclo"
-            status="completo"
-          />
-          <MetricCard
-            title="Alumnos activos"
-            value={students.filter((student) => student.isActive).length}
-            helperText="Alumnos con registro activo"
-            status="completo"
-          />
-          <MetricCard
-            title="Maestros activos"
-            value={teachers.filter((teacher) => teacher.isActive).length}
-            helperText="Usuarios de captura"
-            status="validado"
-          />
-          <MetricCard
-            title="Capturas pendientes"
-            value={pendingGrades}
-            helperText="Registros incompletos"
-            status={pendingGrades > 0 ? "pendiente" : "completo"}
-          />
+    <div className="min-h-screen bg-zinc-50 text-slate-900">
+      <main className="mx-auto w-full max-w-6xl px-6 py-10 lg:px-10 lg:py-12">
+        <section className="rounded-xl border border-slate-200 bg-white p-7 shadow-sm shadow-slate-900/5 lg:p-10">
+          <div className="max-w-3xl">
+            <Badge tone="blue">Proyecto de portafolio</Badge>
+            <h1 className="mt-4 text-3xl font-semibold tracking-tight text-slate-900 lg:text-4xl">
+              EduGrade Flow
+            </h1>
+            <p className="mt-4 text-base leading-7 text-slate-700 lg:text-lg">
+              Sistema web para capturar, validar y generar actas y boletas escolares en Excel.
+            </p>
+
+            <div className="mt-6 flex flex-wrap gap-3">
+              <Button href="/demo">Ver demo</Button>
+              <Button variant="secondary">Ver documentación</Button>
+            </div>
+          </div>
         </section>
 
-        <section className="grid grid-cols-3 gap-4">
-          <Card title="Estado del proyecto" description="Fase 2: layout base y componentes reutilizables.">
-            <div className="space-y-2 text-sm text-slate-700">
-              <p>La interfaz actual es una vista de prueba para validar estilo institucional.</p>
-              <p>No representa el dashboard final ni la pantalla completa de captura.</p>
-            </div>
+        <section className="mt-6 grid gap-4 lg:grid-cols-2">
+          <Card title="Problema actual" description="Situaciones del flujo manual que se buscan resolver.">
+            <ul className="space-y-2 text-sm text-slate-700">
+              <li>Captura repetitiva por formularios.</li>
+              <li>Revisión manual de respuestas.</li>
+              <li>Riesgo de duplicados.</li>
+              <li>Generación manual de actas y boletas.</li>
+            </ul>
           </Card>
 
-          <Card title="Estados de ejemplo" description="Vista rapida de badges para validaciones.">
-            <div className="flex flex-wrap gap-2">
-              <StatusBadge status="completo" />
-              <StatusBadge status="pendiente" />
-              <StatusBadge status="con error" />
-              <StatusBadge status="duplicado" />
-            </div>
-          </Card>
-
-          <Card title="Control de calidad" description="Resumen breve de registros con incidencias.">
-            <dl className="space-y-2 text-sm text-slate-700">
-              <div className="flex items-center justify-between">
-                <dt>Con error</dt>
-                <dd className="font-semibold text-red-700">{errorGrades}</dd>
-              </div>
-              <div className="flex items-center justify-between">
-                <dt>Duplicados</dt>
-                <dd className="font-semibold text-orange-700">{duplicatedGrades}</dd>
-              </div>
-              <div className="flex items-center justify-between">
-                <dt>Pendientes</dt>
-                <dd className="font-semibold text-amber-700">{pendingGrades}</dd>
-              </div>
-            </dl>
+          <Card title="Solución propuesta" description="Enfoque funcional para el nuevo flujo escolar.">
+            <ul className="space-y-2 text-sm text-slate-700">
+              <li>Captura en tabla.</li>
+              <li>Validación automática.</li>
+              <li>Control de trimestre activo.</li>
+              <li>Revisión administrativa.</li>
+              <li>Generación de documentos en Excel.</li>
+            </ul>
           </Card>
         </section>
-      </div>
-    </AppShell>
+
+        <section className="mt-6 grid gap-4 lg:grid-cols-3">
+          <Card title="Módulos principales" description="Bloques principales del sistema.">
+            <ul className="space-y-2 text-sm text-slate-700">
+              <li>Panel secretaria/admin.</li>
+              <li>Captura del maestro.</li>
+              <li>Validaciones.</li>
+              <li>Actas.</li>
+              <li>Boletas.</li>
+            </ul>
+          </Card>
+
+          <Card title="Flujo simplificado" description="Secuencia operativa esperada en el MVP.">
+            <ol className="space-y-2 text-sm text-slate-700">
+              <li>1. Secretaría configura trimestre.</li>
+              <li>2. Maestro captura calificaciones.</li>
+              <li>3. Sistema valida errores.</li>
+              <li>4. Secretaría revisa pendientes.</li>
+              <li>5. Sistema genera actas y boletas.</li>
+            </ol>
+          </Card>
+
+          <Card title="Beneficios esperados" description="Impacto funcional del flujo digital.">
+            <ul className="space-y-2 text-sm text-slate-700">
+              <li>Menos captura repetitiva.</li>
+              <li>Menos errores.</li>
+              <li>Mejor control administrativo.</li>
+              <li>Mayor rapidez para generar documentos.</li>
+              <li>Información más ordenada.</li>
+            </ul>
+          </Card>
+        </section>
+
+        <section className="mt-6 grid gap-4 lg:grid-cols-[2fr_1fr]">
+          <Card title="Estado del proyecto" description="Estatus actual de avance para el portafolio.">
+            <ul className="space-y-2 text-sm text-slate-700">
+              <li>Documentación completada.</li>
+              <li>Datos ficticios creados.</li>
+              <li>Base visual creada.</li>
+              <li>Siguiente paso: pantallas funcionales.</li>
+            </ul>
+          </Card>
+
+          <Card title="Aviso de datos ficticios" description="Protección de información.">
+            <p className="text-sm leading-6 text-slate-700">
+              Este proyecto no usa datos reales ni información sensible de institución,
+              alumnos o maestros.
+            </p>
+            <div className="mt-4 flex flex-wrap gap-2">
+              <Badge tone="green">Datos ficticios</Badge>
+              <Badge tone="slate">Uso académico</Badge>
+            </div>
+          </Card>
+        </section>
+      </main>
+    </div>
   );
 }

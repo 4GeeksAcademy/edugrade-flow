@@ -2,6 +2,7 @@ import { Badge } from "@/components/ui/Badge";
 
 type SidebarProps = {
   systemName: string;
+  activeModule?: (typeof modules)[number];
 };
 
 const modules = [
@@ -9,10 +10,10 @@ const modules = [
   "Capturas",
   "Actas",
   "Boletas",
-  "Configuracion",
+  "Configuración",
 ] as const;
 
-export function Sidebar({ systemName }: SidebarProps) {
+export function Sidebar({ systemName, activeModule = "Dashboard" }: SidebarProps) {
   return (
     <aside className="hidden h-screen w-64 shrink-0 border-r border-slate-200 bg-white lg:flex lg:flex-col">
       <div className="border-b border-slate-200 px-5 py-4">
@@ -21,8 +22,8 @@ export function Sidebar({ systemName }: SidebarProps) {
       </div>
 
       <nav className="flex-1 space-y-1 p-3">
-        {modules.map((item, index) => {
-          const isActive = index === 0;
+        {modules.map((item) => {
+          const isActive = item === activeModule;
 
           return (
             <button

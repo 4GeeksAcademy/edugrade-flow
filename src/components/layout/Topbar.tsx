@@ -4,9 +4,14 @@ import { Badge } from "@/components/ui/Badge";
 type TopbarProps = {
   title: string;
   subtitle?: string;
+  roleLabel?: string;
 };
 
-export function Topbar({ title, subtitle }: TopbarProps) {
+export function Topbar({
+  title,
+  subtitle,
+  roleLabel = "Secretaría / Admin",
+}: TopbarProps) {
   return (
     <header className="sticky top-0 z-10 border-b border-slate-200 bg-white/95 px-8 py-4 backdrop-blur-sm">
       <div className="flex items-center justify-between gap-4">
@@ -17,8 +22,8 @@ export function Topbar({ title, subtitle }: TopbarProps) {
         </div>
 
         <div className="flex items-center gap-3">
-          <Badge tone="blue">Secretaria / Admin</Badge>
-          <Button variant="secondary">Cerrar sesion</Button>
+          <Badge tone="blue">{roleLabel}</Badge>
+          <Button variant="secondary">Cambiar rol</Button>
         </div>
       </div>
     </header>
