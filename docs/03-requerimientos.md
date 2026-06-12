@@ -365,6 +365,135 @@ El sistema y el repositorio público deben usar datos ficticios o anonimizados.
 
 No se deben subir archivos reales con información sensible de alumnos, maestros o institución.
 
+## Reglas adicionales detectadas
+
+Durante el análisis del proceso se identificaron dos reglas importantes que deben considerarse en el sistema:
+
+1. La captura de calificaciones puede habilitarse en fechas diferentes para secundaria y preparatoria.
+2. La escala de calificación puede variar según el nivel educativo.
+
+Estas reglas son importantes porque el proceso de captura no siempre se abre al mismo tiempo para todos los niveles y no todos los niveles usan la misma escala de calificación.
+
+---
+
+## RF24. Ventanas de captura por nivel educativo
+
+El sistema debe permitir que la secretaria/admin controle la captura de calificaciones por nivel educativo.
+
+Esto significa que secundaria y preparatoria pueden tener ventanas de captura diferentes.
+
+Ejemplo:
+
+```text
+Preparatoria
+II Trimestre: Activo
+
+Secundaria
+II Trimestre: Bloqueado
+```
+
+La secretaria/admin debe poder definir si la captura está:
+
+```text
+Bloqueada
+Activa
+Cerrada
+```
+
+para cada combinación de:
+
+```text
+Nivel educativo + Trimestre + Ciclo escolar
+```
+
+### Regla
+
+El maestro solo podrá capturar calificaciones si la ventana de captura correspondiente a su nivel educativo está activa.
+
+---
+
+## RF25. Fechas diferentes para secundaria y preparatoria
+
+El sistema debe permitir que secundaria y preparatoria tengan fechas distintas de apertura y cierre de captura.
+
+Ejemplo:
+
+```text
+Preparatoria
+Captura activa en enero
+
+Secundaria
+Captura activa en marzo
+```
+
+Esto permite representar el flujo real donde la secretaría/admin decide cuándo se habilitan las calificaciones de cada nivel.
+
+---
+
+## RF26. Escala de calificación por nivel educativo
+
+El sistema debe manejar escalas de calificación diferentes según el nivel educativo.
+
+Regla inicial:
+
+```text
+Secundaria: escala de 1 a 10
+Preparatoria: escala de 0 a 100
+```
+
+Esto significa que el sistema debe validar la calificación final de acuerdo con el nivel educativo del grupo.
+
+Ejemplo:
+
+```text
+Alumno de secundaria
+Calificación válida: 8
+Calificación inválida: 85
+
+Alumno de preparatoria
+Calificación válida: 85
+Calificación válida: 97
+```
+
+---
+
+## RF27. Avisos de escala durante la captura
+
+La pantalla de captura debe mostrar un aviso claro al maestro indicando la escala que debe usar.
+
+Ejemplo para secundaria:
+
+```text
+Recuerda capturar calificaciones en escala de 1 a 10 para secundaria.
+```
+
+Ejemplo para preparatoria:
+
+```text
+Recuerda capturar calificaciones en escala de 0 a 100 para preparatoria.
+```
+
+Este aviso debe aparecer en la pantalla de captura para evitar errores de escala.
+
+---
+
+## RF28. Validación automática de escala
+
+El sistema debe validar automáticamente que la calificación final esté dentro del rango permitido para el nivel educativo.
+
+Ejemplo:
+
+```text
+Secundaria
+Si el maestro captura 85, el sistema debe marcar error.
+
+Preparatoria
+Si el maestro captura 97, el sistema debe permitirlo.
+```
+
+La validación debe aplicarse antes de guardar la captura y antes de generar actas o boletas.
+
+
 ---
 
 ## Requerimientos no funcionales
@@ -504,6 +633,49 @@ No se deben generar actas o boletas si existen errores críticos como:
 La salida inicial del sistema será en formato Excel.
 
 PDF queda fuera del alcance inicial.
+
+### RB11. Captura por nivel educativo
+
+La captura de calificaciones no se habilita necesariamente para toda la institución al mismo tiempo.
+
+La secretaria/admin puede activar o cerrar la captura por nivel educativo.
+
+Ejemplo:
+
+```text
+Secundaria: bloqueado
+Preparatoria: activo
+```
+
+---
+
+### RB12. Escala de calificación por nivel educativo
+
+Cada nivel educativo puede manejar una escala de calificación diferente.
+
+Regla inicial:
+
+```text
+Secundaria: 1 a 10
+Preparatoria: 0 a 100
+```
+
+El sistema debe validar la escala antes de guardar una calificación.
+
+---
+
+### RB13. Aviso visible de escala
+
+La pantalla de captura debe mostrar al maestro un aviso claro sobre la escala que debe usar.
+
+Ejemplo:
+
+```text
+Secundaria: captura del 1 al 10.
+Preparatoria: captura del 0 al 100.
+```
+
+Este aviso ayuda a evitar errores de captura.
 
 ---
 

@@ -520,6 +520,53 @@ Alumno: Alumno 01
 
 En el MVP, la generación será individual. La generación masiva por grupo puede implementarse en una fase posterior.
 
+
+## Pantalla: Ventanas de captura
+
+### Objetivo
+
+Permitir que la secretaria/admin controle cuándo se habilita la captura de calificaciones para cada nivel educativo.
+
+Esta pantalla es necesaria porque secundaria y preparatoria pueden tener fechas diferentes de captura.
+
+### Usuario principal
+
+Secretaria/Admin.
+
+### Información visible
+
+La pantalla debe mostrar una tabla con:
+
+| Nivel educativo | Trimestre    | Estado    | Fecha de apertura | Fecha de cierre | Acción  |
+| --------------- | ------------ | --------- | ----------------- | --------------- | ------- |
+| Secundaria      | II Trimestre | Bloqueado | 2026-03-01        | 2026-03-15      | Activar |
+| Preparatoria    | II Trimestre | Activo    | 2026-01-10        | 2026-01-25      | Cerrar  |
+
+### Estados posibles
+
+```text
+Bloqueado
+Activo
+Cerrado
+```
+
+### Acciones principales
+
+```text
+Activar captura
+Cerrar captura
+Editar fechas
+Ver grupos afectados
+```
+
+### Reglas de pantalla
+
+* La captura no se habilita necesariamente para toda la institución al mismo tiempo.
+* La secretaria/admin puede tener preparatoria activa y secundaria bloqueada, o al revés.
+* El sistema debe mostrar claramente qué nivel educativo tiene captura activa.
+* Si una ventana está cerrada, solo administración puede autorizar correcciones especiales.
+* Las fechas mostradas deben ser configurables en el sistema.
+
 ---
 
 # Panel maestro
@@ -690,30 +737,59 @@ Duplicados: 0
 
 Estado: Listo para enviar
 ```
+## Aviso de escala en captura de calificaciones
+
+La pantalla de captura del maestro debe mostrar un aviso claro sobre la escala de calificación que corresponde al nivel educativo del grupo.
+
+### Ejemplo para secundaria
+
+```text
+Recuerda capturar calificaciones en escala de 1 a 10 para secundaria.
+```
+
+### Ejemplo para preparatoria
+
+```text
+Recuerda capturar calificaciones en escala de 0 a 100 para preparatoria.
+```
+
+### Ubicación recomendada del aviso
+
+El aviso debe mostrarse arriba de la tabla de captura, junto al contexto de:
+
+```text
+Materia
+Grupo o nivel
+Trimestre
+Nivel educativo
+```
+
+### Reglas de pantalla
+
+* Si el maestro selecciona un grupo de secundaria, el sistema debe mostrar escala 1 a 10.
+* Si el maestro selecciona un grupo de preparatoria, el sistema debe mostrar escala 0 a 100.
+* El aviso debe ser visible antes de que el maestro capture calificaciones.
+* Si el maestro captura una calificación fuera del rango permitido, la fila debe marcarse con error.
+* El sistema debe evitar que el maestro guarde una captura con errores de escala.
 
 ---
 
 ## Pantallas prioritarias para el MVP
 
-Para la primera versión, las pantallas más importantes son:
-
 ```text
-1. Login simulado
-2. Dashboard admin
-3. Gestión de trimestre activo
-4. Dashboard maestro
-5. Captura de calificaciones en tabla
-6. Revisión de capturas
-7. Generación de acta
-8. Generación de boleta
+1. Landing page
+2. Login simulado / selección de rol
+3. Dashboard administrativo
+4. Ventanas de captura por nivel educativo
+5. Panel maestro
+6. Captura de calificaciones en tabla
+7. Revisión administrativa de capturas
+8. Reporte de pendientes
+9. Generación de acta
+10. Generación de boleta
 ```
 
-Las demás pantallas pueden iniciar como vistas simples o datos simulados.
+### Nota
 
----
+La pantalla de ventanas de captura es prioritaria porque define si un maestro puede capturar o no, dependiendo del nivel educativo y del trimestre.
 
-## Resumen
-
-Las pantallas propuestas buscan reflejar el flujo real de la institución, pero reduciendo la captura repetitiva y centralizando la revisión administrativa.
-
-El diseño debe priorizar velocidad de captura para maestros y control operativo para secretaria/admin.

@@ -3,14 +3,14 @@ import type { EnglishLevel, EnglishLevelStudent } from "@/types/academic";
 export const englishLevels: EnglishLevel[] = [
   {
     id: "english_level_a",
-    name: "Nivel A de Ingles",
+    name: "Nivel A de Inglés",
     level: "secundaria",
     cycleId: "cycle_2025_2026",
     isActive: true,
   },
   {
     id: "english_level_b",
-    name: "Nivel B de Ingles",
+    name: "Nivel B de Inglés",
     level: "secundaria",
     cycleId: "cycle_2025_2026",
     isActive: true,
@@ -34,4 +34,7 @@ export const englishLevelStudents: EnglishLevelStudent[] = [
   { id: "els_013", englishLevelId: "english_level_b", studentId: "student_013", cycleId: "cycle_2025_2026", isActive: true },
   { id: "els_014", englishLevelId: "english_level_b", studentId: "student_014", cycleId: "cycle_2025_2026", isActive: true },
   { id: "els_015", englishLevelId: "english_level_b", studentId: "student_015", cycleId: "cycle_2025_2026", isActive: true },
+  { id: "els_016", englishLevelId: "english_level_b", studentId: "student_016", cycleId: "cycle_2025_2026", isActive: true },
+  { id: "els_017", englishLevelId: "english_level_b", studentId: "student_017", cycleId: "cycle_2025_2026", isActive: true },
+  { id: "els_018", englishLevelId: "english_level_b", studentId: "student_018", cycleId: "cycle_2025_2026", isActive: true },
 ];

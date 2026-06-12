@@ -552,6 +552,56 @@ El dashboard debe verse:
 * con botones claros
 * con estados visibles
 
+## Diseño para ventanas de captura por nivel educativo
+
+El sistema debe mostrar de forma clara cuándo la captura de calificaciones está activa, bloqueada o cerrada para cada nivel educativo.
+
+Esta regla es importante porque secundaria y preparatoria pueden tener calendarios de captura diferentes.
+
+### Objetivo visual
+
+La secretaria/admin debe poder identificar rápidamente:
+
+```text
+Qué nivel educativo puede capturar
+Qué nivel educativo está bloqueado
+Qué nivel educativo ya cerró captura
+Cuáles son las fechas de apertura y cierre
+```
+
+### Representación recomendada
+
+En el dashboard administrativo debe existir una sección llamada:
+
+```text
+Ventanas de captura
+```
+
+La sección puede mostrarse como tabla o como cards compactas.
+
+Ejemplo en tabla:
+
+| Nivel educativo | Trimestre    | Estado    | Apertura   | Cierre     |
+| --------------- | ------------ | --------- | ---------- | ---------- |
+| Secundaria      | II Trimestre | Bloqueado | 2026-03-01 | 2026-03-15 |
+| Preparatoria    | II Trimestre | Activo    | 2026-01-10 | 2026-01-25 |
+
+### Colores de estado
+
+```text
+Activo    → verde
+Bloqueado → gris o ámbar
+Cerrado   → rojo o gris oscuro
+```
+
+### Reglas visuales
+
+* El estado activo debe ser fácil de identificar.
+* No se debe mostrar un único “trimestre activo” como si aplicara igual para toda la institución.
+* Si se muestra un trimestre general, debe aclararse que la captura real depende del nivel educativo.
+* Las fechas deben tener buena legibilidad.
+* Los estados deben usar badges consistentes con el resto del sistema.
+
 ---
 
 # Pantalla 2: Captura de calificaciones del maestro
@@ -731,6 +781,67 @@ Para Inglés, la captura se realiza por nivel, pero los reportes se generarán p
 ```
 
 Esta nota ayuda a explicar el caso especial sin saturar la interfaz.
+
+## Diseño del aviso de escala en captura
+
+La pantalla de captura del maestro debe mostrar un aviso visible indicando la escala correcta de calificación según el nivel educativo.
+
+### Objetivo visual
+
+Evitar que el maestro capture calificaciones en una escala incorrecta.
+
+Ejemplo:
+
+```text
+Secundaria: capturar 8 en lugar de 80.
+Preparatoria: capturar 80 en lugar de 8.
+```
+
+### Ubicación recomendada
+
+El aviso debe aparecer arriba de la tabla de captura, junto al contexto de la materia, grupo, trimestre y nivel educativo.
+
+Ejemplo para secundaria:
+
+```text
+Recuerda capturar calificaciones en escala de 1 a 10 para secundaria.
+```
+
+Ejemplo para preparatoria:
+
+```text
+Recuerda capturar calificaciones en escala de 0 a 100 para preparatoria.
+```
+
+### Estilo visual recomendado
+
+* Usar una alerta informativa compacta.
+* Fondo azul muy claro o ámbar muy claro.
+* Borde sutil.
+* Texto claro y directo.
+* No debe parecer un error si solo es recordatorio.
+* Debe estar visible antes de la tabla.
+
+### Diferencia visual entre aviso, advertencia y error
+
+| Tipo              | Uso                                        | Color sugerido |
+| ----------------- | ------------------------------------------ | -------------- |
+| Aviso informativo | Recordar escala antes de capturar          | Azul           |
+| Advertencia       | Posible escala incorrecta, pero corregible | Ámbar          |
+| Error             | Valor fuera de rango o inválido            | Rojo           |
+
+### Ejemplos
+
+```text
+Aviso:
+Recuerda capturar calificaciones en escala de 1 a 10 para secundaria.
+
+Advertencia:
+Preparatoria usa escala de 0 a 100. Revisa si quisiste capturar 80 en lugar de 8.
+
+Error:
+Secundaria usa escala de 1 a 10. Revisa si quisiste capturar 8.5 en lugar de 85.
+```
 
 ---
 

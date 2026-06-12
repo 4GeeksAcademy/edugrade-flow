@@ -483,6 +483,133 @@ Antes de generar documentos, el sistema debe validar que exista una plantilla de
 * Acta por materia.
 * Boleta individual.
 
+## Validaciones adicionales por nivel educativo
+
+### V28. Validar ventana de captura por nivel educativo
+
+Antes de permitir que un maestro capture calificaciones, el sistema debe verificar que exista una ventana de captura activa para:
+
+```text
+Ciclo escolar + Trimestre + Nivel educativo
+```
+
+Ejemplo:
+
+```text
+Preparatoria
+II Trimestre: Activo
+
+Secundaria
+II Trimestre: Bloqueado
+```
+
+En este caso, un maestro de preparatoria sí puede capturar, pero un maestro de secundaria no.
+
+### Resultado esperado
+
+| Condición         | Resultado                                           |
+| ----------------- | --------------------------------------------------- |
+| Ventana activa    | Permitir captura                                    |
+| Ventana bloqueada | No permitir captura                                 |
+| Ventana cerrada   | No permitir captura, salvo excepción administrativa |
+
+---
+
+### V29. Validar fechas de apertura y cierre
+
+El sistema debe validar que la fecha actual esté dentro del rango permitido de captura.
+
+Ejemplo:
+
+```text
+Fecha de apertura: 2026-01-10
+Fecha de cierre: 2026-01-25
+```
+
+Si la fecha actual está fuera de ese rango, el sistema debe bloquear la captura o mostrar aviso de captura no disponible.
+
+### Resultado esperado
+
+| Condición               | Resultado                                   |
+| ----------------------- | ------------------------------------------- |
+| Fecha dentro del rango  | Permitir captura                            |
+| Fecha antes de apertura | Mostrar “La captura aún no está disponible” |
+| Fecha después de cierre | Mostrar “La captura ya fue cerrada”         |
+
+---
+
+### V30. Validar escala de calificación por nivel educativo
+
+El sistema debe validar que la calificación capturada corresponda a la escala del nivel educativo.
+
+Regla inicial:
+
+```text
+Secundaria: 1 a 10
+Preparatoria: 0 a 100
+```
+
+### Ejemplos
+
+| Nivel educativo | Calificación capturada | Resultado                                                     |
+| --------------- | ---------------------: | ------------------------------------------------------------- |
+| Secundaria      |                      8 | Válido                                                        |
+| Secundaria      |                     85 | Error                                                         |
+| Preparatoria    |                     85 | Válido                                                        |
+| Preparatoria    |                      9 | Válido, pero puede requerir aviso si se esperaba escala 0-100 |
+
+### Nota importante
+
+En preparatoria, una calificación como 9 puede ser técnicamente válida si la escala permite 0 a 100, pero podría representar un error humano si el maestro quería capturar 90.
+
+Por eso el sistema puede mostrar una advertencia preventiva cuando detecte valores inusualmente bajos para preparatoria.
+
+---
+
+### V31. Aviso preventivo por posible escala incorrecta
+
+El sistema debe mostrar advertencias cuando la calificación parezca capturada en la escala equivocada.
+
+Ejemplos:
+
+```text
+Secundaria
+Si el maestro captura 85, mostrar error:
+“Secundaria usa escala de 1 a 10. Revisa si quisiste capturar 8.5.”
+
+Preparatoria
+Si el maestro captura 8, mostrar advertencia:
+“Preparatoria usa escala de 0 a 100. Revisa si quisiste capturar 80.”
+```
+
+### Diferencia entre error y advertencia
+
+| Caso                         | Tipo        | Acción                                                 |
+| ---------------------------- | ----------- | ------------------------------------------------------ |
+| Secundaria con 85            | Error       | No permitir guardar                                    |
+| Preparatoria con 8           | Advertencia | Permitir guardar solo si el maestro confirma o corrige |
+| Calificación fuera del rango | Error       | No permitir guardar                                    |
+
+---
+
+### V32. Mostrar aviso de escala antes de capturar
+
+La pantalla de captura debe mostrar un aviso visible antes de la tabla.
+
+Ejemplo para secundaria:
+
+```text
+Recuerda capturar calificaciones en escala de 1 a 10 para secundaria.
+```
+
+Ejemplo para preparatoria:
+
+```text
+Recuerda capturar calificaciones en escala de 0 a 100 para preparatoria.
+```
+
+Este aviso debe aparecer antes de que el maestro capture datos para prevenir errores.
+
 ---
 
 # 5. Niveles de severidad
@@ -562,6 +689,56 @@ validated   → validada
 locked  → todavía no se puede capturar
 active  → habilitado para captura
 closed  → cerrado
+```
+## Estados de ventana de captura
+
+```text
+locked  → la captura todavía no está habilitada
+active  → la captura está habilitada
+closed  → la captura ya fue cerrada
+```
+
+### Reglas
+
+* Si la ventana está `locked`, el maestro no puede capturar.
+* Si la ventana está `active`, el maestro puede capturar.
+* Si la ventana está `closed`, el maestro no puede capturar, salvo excepción administrativa.
+
+
+## Mensajes sugeridos de validación
+
+### Ventana bloqueada
+
+```text
+La captura de calificaciones para secundaria aún no está habilitada.
+```
+
+### Ventana cerrada
+
+```text
+La captura de calificaciones para preparatoria ya fue cerrada. Solicita autorización administrativa para corregir.
+```
+
+### Escala incorrecta en secundaria
+
+```text
+Secundaria usa escala de 1 a 10. Revisa si quisiste capturar 8.5 en lugar de 85.
+```
+
+### Posible escala incorrecta en preparatoria
+
+```text
+Preparatoria usa escala de 0 a 100. Revisa si quisiste capturar 80 en lugar de 8.
+```
+
+### Aviso informativo de escala
+
+```text
+Recuerda capturar calificaciones en escala de 1 a 10 para secundaria.
+```
+
+```text
+Recuerda capturar calificaciones en escala de 0 a 100 para preparatoria.
 ```
 
 ---

@@ -664,6 +664,46 @@ Evitar valores negativos
 Mostrar error si el valor no es válido
 Alinear valores numéricos al centro o derecha
 ```
+## Inputs de calificación
+
+Los campos de calificación deben adaptarse al nivel educativo.
+
+### Secundaria
+
+```text
+Escala permitida: 1 a 10
+```
+
+### Preparatoria
+
+```text
+Escala permitida: 0 a 100
+```
+
+### Reglas visuales
+
+* El campo debe mostrar placeholder acorde a la escala.
+* El contexto de la captura debe mostrar el nivel educativo.
+* El aviso de escala debe aparecer antes de la tabla.
+* Los errores deben marcar la celda o fila correspondiente.
+* Las advertencias deben permitir revisión antes de guardar.
+
+### Placeholders sugeridos
+
+| Nivel educativo | Placeholder |
+| --------------- | ----------- |
+| Secundaria      | Ej. 8.5     |
+| Preparatoria    | Ej. 85      |
+
+### Mensajes cercanos al input
+
+```text
+Secundaria usa escala de 1 a 10.
+```
+
+```text
+Preparatoria usa escala de 0 a 100.
+```
 
 ---
 
@@ -723,6 +763,33 @@ Incorrecto:
 The capture contains an unresolved validation issue
 This entry has duplicated student metadata
 ```
+## Componentes para ventanas de captura
+
+### CaptureWindowBadge
+
+Componente visual para representar el estado de una ventana de captura por nivel educativo.
+
+### Estados
+
+| Estado | Texto visible | Color sugerido     | Uso                               |
+| ------ | ------------- | ------------------ | --------------------------------- |
+| active | Activo        | Verde              | La captura está habilitada        |
+| locked | Bloqueado     | Gris o ámbar       | La captura aún no está habilitada |
+| closed | Cerrado       | Rojo o gris oscuro | La captura ya terminó             |
+
+### Ejemplo visual
+
+```text
+Secundaria    II Trimestre    Bloqueado
+Preparatoria  II Trimestre    Activo
+```
+
+### Reglas de uso
+
+* Usar siempre texto en español.
+* No usar únicamente color; el estado debe tener texto visible.
+* El badge debe ser compacto y legible.
+* Debe usarse en dashboard administrativo y en pantallas de configuración.
 
 ---
 
@@ -776,6 +843,62 @@ Los mensajes deben ser:
 * en español
 * enfocados en la acción
 * sin lenguaje técnico innecesario
+
+## Componente Alert
+
+El componente `Alert` se usa para mostrar avisos, advertencias o errores relacionados con captura de calificaciones.
+
+### Variantes
+
+| Variante | Uso                      | Color sugerido |
+| -------- | ------------------------ | -------------- |
+| info     | Aviso informativo        | Azul claro     |
+| warning  | Posible error corregible | Ámbar claro    |
+| error    | Error que impide guardar | Rojo claro     |
+| success  | Confirmación correcta    | Verde claro    |
+
+### Alert informativo de escala
+
+Se usa para recordar al maestro la escala correcta antes de capturar.
+
+Ejemplo secundaria:
+
+```text
+Recuerda capturar calificaciones en escala de 1 a 10 para secundaria.
+```
+
+Ejemplo preparatoria:
+
+```text
+Recuerda capturar calificaciones en escala de 0 a 100 para preparatoria.
+```
+
+### Alert de advertencia
+
+Se usa cuando el sistema detecta una posible escala incorrecta, pero el valor no necesariamente está fuera del rango técnico.
+
+Ejemplo:
+
+```text
+Preparatoria usa escala de 0 a 100. Revisa si quisiste capturar 80 en lugar de 8.
+```
+
+### Alert de error
+
+Se usa cuando el valor capturado está fuera del rango permitido.
+
+Ejemplo:
+
+```text
+Secundaria usa escala de 1 a 10. Revisa si quisiste capturar 8.5 en lugar de 85.
+```
+
+### Reglas visuales
+
+* El aviso informativo no debe parecer error.
+* La advertencia debe llamar la atención sin bloquear visualmente toda la pantalla.
+* El error debe ser visible y estar cerca del campo afectado.
+* Todos los mensajes deben ser claros, breves y accionables.
 
 ---
 

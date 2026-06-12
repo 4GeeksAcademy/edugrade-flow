@@ -131,6 +131,48 @@ closed  → trimestre cerrado
   "status": "active"
 }
 ```
+### RB11. Captura por nivel educativo
+
+La captura de calificaciones no se habilita necesariamente para toda la institución al mismo tiempo.
+
+La secretaria/admin puede activar o cerrar la captura por nivel educativo.
+
+Ejemplo:
+
+```text
+Secundaria: bloqueado
+Preparatoria: activo
+```
+
+---
+
+### RB12. Escala de calificación por nivel educativo
+
+Cada nivel educativo puede manejar una escala de calificación diferente.
+
+Regla inicial:
+
+```text
+Secundaria: 1 a 10
+Preparatoria: 0 a 100
+```
+
+El sistema debe validar la escala antes de guardar una calificación.
+
+---
+
+### RB13. Aviso visible de escala
+
+La pantalla de captura debe mostrar al maestro un aviso claro sobre la escala que debe usar.
+
+Ejemplo:
+
+```text
+Secundaria: captura del 1 al 10.
+Preparatoria: captura del 0 al 100.
+```
+
+Este aviso ayuda a evitar errores de captura.
 
 ---
 
@@ -509,6 +551,14 @@ Los documentos iniciales serán:
 ## Relaciones principales
 
 ```text
+Ciclo escolar 1 ─── N Ventanas de captura
+Trimestre 1 ─── N Ventanas de captura
+Nivel educativo 1 ─── N Ventanas de captura
+Nivel educativo 1 ─── 1 Escala de calificación
+```
+
+
+```text
 Usuario 1 ─── 1 Maestro
 Ciclo escolar 1 ─── N Trimestres
 Ciclo escolar 1 ─── N Grupos oficiales
@@ -586,6 +636,32 @@ Cuando un trimestre está cerrado, los maestros no pueden modificar calificacion
 
 Solo la secretaria/admin puede corregir o desbloquear una captura específica.
 
+
+### La captura depende de una ventana activa
+
+Antes de permitir capturar calificaciones, el sistema debe validar que exista una ventana de captura activa para:
+
+```text
+cycleId + termId + academicLevel
+```
+
+Si la ventana está bloqueada o cerrada, el maestro no puede capturar.
+
+---
+
+### La escala depende del nivel educativo
+
+Antes de guardar una calificación, el sistema debe validar que la calificación final esté dentro del rango permitido para el nivel educativo del alumno.
+
+Reglas iniciales:
+
+```text
+Secundaria: 1 a 10
+Preparatoria: 0 a 100
+```
+
+Si la calificación no cumple la escala, la fila debe marcarse con error.
+
 ---
 
 ## Modelo simplificado para MVP
@@ -635,6 +711,26 @@ type Grade = {
   exam: number;
   finalGrade: number;
   status: "submitted" | "validated" | "error" | "corrected";
+};
+```
+```ts
+type CaptureWindow = {
+  id: string;
+  cycleId: string;
+  termId: string;
+  academicLevel: "secundaria" | "preparatoria";
+  status: "locked" | "active" | "closed";
+  startDate?: string;
+  endDate?: string;
+};
+
+type GradeScale = {
+  id: string;
+  academicLevel: "secundaria" | "preparatoria";
+  minGrade: number;
+  maxGrade: number;
+  decimalsAllowed: boolean;
+  description: string;
 };
 ```
 

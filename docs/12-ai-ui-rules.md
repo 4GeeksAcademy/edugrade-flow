@@ -290,6 +290,44 @@ Active Enrollment
 
 A menos que sean adaptadas a una necesidad real del proyecto.
 
+## Reglas obligatorias sobre ventanas de captura
+
+Los agentes deben considerar que la captura de calificaciones no se habilita necesariamente para toda la institución al mismo tiempo.
+
+La activación depende de:
+
+```text
+Ciclo escolar + Trimestre + Nivel educativo
+```
+
+### Regla principal
+
+Secundaria y preparatoria pueden tener ventanas de captura diferentes.
+
+Ejemplo:
+
+```text
+Secundaria
+II Trimestre: Bloqueado
+
+Preparatoria
+II Trimestre: Activo
+```
+
+### Instrucciones para agentes
+
+* No asumir que existe un único trimestre activo global para toda la institución.
+* No mostrar “trimestre activo” como si aplicara igual para secundaria y preparatoria.
+* Si se muestra contexto de trimestre, aclarar que la captura real depende del nivel educativo.
+* En dashboards administrativos, mostrar una sección llamada “Ventanas de captura”.
+* Usar estados visibles en español:
+
+  * Activo
+  * Bloqueado
+  * Cerrado
+* Usar badges o indicadores visuales para diferenciar estados.
+* No permitir que una pantalla de maestro muestre captura disponible si la ventana de su nivel educativo está bloqueada o cerrada.
+
 ---
 
 # 8. Reglas para captura de calificaciones
@@ -603,4 +641,94 @@ hacer la calificación final manual si debe calcularse
 ```
 
 ---
+
+# nuevas reglas
+## Reglas obligatorias sobre escala de calificación
+
+Los agentes deben considerar que la escala de calificación depende del nivel educativo.
+
+Regla inicial:
+
+```text
+Secundaria: 1 a 10
+Preparatoria: 0 a 100
+```
+
+### Instrucciones para agentes
+
+* No usar una única escala de calificación para toda la institución.
+* No asumir que todas las calificaciones van de 0 a 100.
+* En secundaria, la captura debe validarse en escala de 1 a 10.
+* En preparatoria, la captura debe validarse en escala de 0 a 100.
+* La pantalla de captura debe mostrar un aviso visible antes de la tabla.
+* El aviso debe cambiar según el nivel educativo.
+* Los placeholders de inputs deben cambiar según el nivel educativo.
+
+### Ejemplos de aviso
+
+Para secundaria:
+
+```text
+Recuerda capturar calificaciones en escala de 1 a 10 para secundaria.
+```
+
+Para preparatoria:
+
+```text
+Recuerda capturar calificaciones en escala de 0 a 100 para preparatoria.
+```
+
+## Reglas visuales para errores de escala
+
+Los agentes deben diferenciar visualmente entre aviso, advertencia y error.
+
+| Tipo              | Uso                               | Debe bloquear guardado  |
+| ----------------- | --------------------------------- | ----------------------- |
+| Aviso informativo | Recordar escala antes de capturar | No                      |
+| Advertencia       | Posible escala incorrecta         | Depende de confirmación |
+| Error             | Valor fuera del rango permitido   | Sí                      |
+
+### Ejemplos
+
+```text
+Aviso:
+Recuerda capturar calificaciones en escala de 1 a 10 para secundaria.
+
+Advertencia:
+Preparatoria usa escala de 0 a 100. Revisa si quisiste capturar 80 en lugar de 8.
+
+Error:
+Secundaria usa escala de 1 a 10. Revisa si quisiste capturar 8.5 en lugar de 85.
+```
+
+### Instrucciones para agentes
+
+* No mostrar todos los mensajes como error.
+* No bloquear captura por un aviso informativo.
+* Marcar como error cuando la calificación esté fuera del rango permitido.
+* Mostrar advertencia cuando el valor sea técnicamente válido, pero parezca capturado en la escala equivocada.
+* Colocar errores cerca de la fila o celda afectada.
+
+## Reglas para barras de avance y estados
+
+Los agentes deben mantener coherencia entre porcentaje, estado y color.
+
+### Colores esperados
+
+```text
+Completo     → verde
+En progreso  → azul
+Pendiente    → ámbar o gris
+Con error    → rojo
+Duplicado    → naranja o rojo
+```
+
+### Reglas de coherencia
+
+* No usar azul para todos los estados.
+* No mostrar “En progreso” con 100% salvo que se aclare como “Capturado / pendiente de validar”.
+* Si una captura tiene error, el estado debe ser “Con error”.
+* Si una captura está duplicada, el estado debe ser “Duplicado”.
+* El color de la barra debe coincidir con el estado operativo.
+* La tabla debe evitar filas duplicadas confusas sin explicación.
 

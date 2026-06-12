@@ -3,7 +3,16 @@ import type { GradeStatus } from "@/types/academic";
 import { Badge } from "./Badge";
 
 type StatusBadgeProps = {
-  status: GradeStatus | "en progreso" | "bloqueado";
+  status:
+    | GradeStatus
+    | "en progreso"
+    | "bloqueado"
+    | "Completo"
+    | "Pendiente"
+    | "Con error"
+    | "Duplicado"
+    | "En progreso"
+    | "Bloqueado";
 };
 
 export function StatusBadge({ status }: StatusBadgeProps) {
